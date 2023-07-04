@@ -42,7 +42,7 @@ async function startBasicCall() {
   });
 
   startVoice = () => {
-    console.log('rupam1', agoraEngine);
+    console.log('rupam 1', agoraEngine);
     let search_params = new URL(window.location.href).searchParams;
     var avtarName = search_params.get("name");
     var roomName = search_params.get("room");
@@ -50,15 +50,16 @@ async function startBasicCall() {
     options.channel = roomName;
     socket.emit("checkAgoraToken", roomName);
     socket.on("getTokenFromDB", async (token) => {
-      console.log('rupam2', agoraEngine);
+      
       options.token = token;
-      console.log("rupam", token);
+      console.log("rupam 2", token);
       await agoraEngine.join(
         options.appId,
         options.channel,
         options.token,
         options.uid
       );
+      console.log('rupam 3', token);
       /*------------------------------------*/
 
       
