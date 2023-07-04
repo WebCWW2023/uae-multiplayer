@@ -26,7 +26,8 @@ var remoteUser = {};
 async function startBasicCall() {
   const agoraEngine = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
   agoraEngine.on("user-published", async (user, mediaType) => {
-    await agoraEngine.subscribe(user, mediaType);z
+    await agoraEngine.subscribe(user, mediaType);
+    console.log('rupam',user, mediaType);
     if (mediaType == "audio") {
       const remoteUid = user.uid;
       // Get the RemoteAudioTrack object from the AgoraRTCRemoteUser object.
