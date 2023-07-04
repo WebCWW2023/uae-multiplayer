@@ -53,7 +53,7 @@ async function startBasicCall() {
       
       options.token = token;
       console.log("rupam 2", options);
-      await agoraEngine.join(
+      agoraEngine.join(
         options.appId,
         options.channel,
         options.token,
