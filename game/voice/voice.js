@@ -23,8 +23,8 @@ var muteButton;
 
 var remoteUser = {};
 
-async function startBasicCall() { 
   const agoraEngine = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+async function startBasicCall() { 
 
   console.log(agoraEngine);
   agoraEngine.on("user-published", async (user, mediaType) => {
