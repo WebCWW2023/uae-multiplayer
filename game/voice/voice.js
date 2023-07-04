@@ -4,7 +4,7 @@ const socket = io();
 
 let options = {
   // Pass your App ID here.
-  appId: "3cfa260fc2024b9ea344541f797bd171",
+  appId: "aa6bd939aae94c179e8fb5f7ab619222",
   // Set the channel name.
   channel: "",
   // Pass your temp token here.
