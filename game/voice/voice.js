@@ -47,9 +47,10 @@ async function startBasicCall() {
     var roomName = search_params.get("room");
     // Join a channel.
     options.channel = roomName;
-     socket.emit("checkAgoraToken", roomName);
+    socket.emit("checkAgoraToken", roomName);
     socket.on("getTokenFromDB", async (token) => {
       options.token = token;
+      console.log("rupam", token);
       await agoraEngine.join(
         options.appId,
         options.channel,
