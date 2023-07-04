@@ -5,8 +5,8 @@ const {
   RtmRole,
 } = require("agora-access-token");
 
-const appId = "3cfa260fc2024b9ea344541f797bd171";
-const appCertificate = "1156571fe7b14abb95fe33a36a430f2e";
+const appId = "aa6bd939aae94c179e8fb5f7ab619222";
+const appCertificate = "ce284162ba00456aa49d6b0f1c1b4c50";
 // const channelName = "test";
 const uid = 0;
 const role = RtcRole.PUBLISHER;
