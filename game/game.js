@@ -875,6 +875,7 @@ const updatePlayerLocally = (animation) => {
       voiceIdArray.map(voiceId=>{
       if(voiceId && voiceId!==myVoiceId){ 
         if (Object.keys(remoteUser).length) { 
+          console.log('ok',remoteUser[voiceId]);
             if (distance < 8) {
               remoteUser[voiceId].play();
             } else {
