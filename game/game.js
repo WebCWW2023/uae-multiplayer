@@ -325,6 +325,8 @@ const htmlEvents = () => {
     [cameraPosition, avtarViewCount] = ChangeView(playersPeer[socketName], avtarViewCount);
   });
   raiseB.addEventListener("click", (e) => {
+	  
+		  startVoice();
     updatePlayerLocally("Hand_Raise");
     updatePlayerGloally("Hand_Raise");
   });
@@ -407,7 +409,7 @@ const init = () => {
           mainModel.scene.getObjectByName(item)
         );
         addBanner();
-		  startVoice();
+		 // startVoice();
         isFirstTimeLoaded = false;
       }
     },
