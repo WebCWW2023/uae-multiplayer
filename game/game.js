@@ -1,6 +1,7 @@
 const socket = io();
 var socketName;
 var myVoiceId;
+var voiceIdArray=[];
 /*-----------------canvas-------------------*/
 import * as THREE from "three";
 import * as DAT from "../cdn/newadded/dat.js";
@@ -393,6 +394,7 @@ socket.on("connect", () => {
 });
 socket.on('addMyVoiceId',(data)=>{ 
   myVoiceId=data.myVoiceId; 
+  voiceIdArray.push(myVoiceId);
 })
 const init = () => {
   /*-----------------loadingManager-------------------*/
@@ -820,6 +822,10 @@ const init = () => {
       let distance = playersPeer[socketName].children[0].position.distanceTo(
         playersPeer[data.socketName2].children[0].position
       ); 
+      if(!voiceIdArray.includes(data.voiceId)){
+        voiceIdArray.push(data.voiceId);
+      }
+
       if (Object.keys(remoteUser).length) { 
         if (distance < 8) {
           remoteUser[data.voiceId].play();
@@ -860,7 +866,7 @@ const init = () => {
 /*-----------------oka updatePlayerLocally-------------------*/
 const updatePlayerLocally = (animation) => {
   if (playersPeer[socketName] && playersPeer[socketName].children[0]) {
-    console.log('playersPeerData',playersPeerData); 
+    console.log('voiceIdArray',voiceIdArray); 
     //  let distance = playersPeer[socketName].children[0].position.distanceTo(
     //   playersPeer[data.socketName2].children[0].position
     // ); 
