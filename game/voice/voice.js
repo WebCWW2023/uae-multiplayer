@@ -52,7 +52,7 @@ async function startBasicCall() {
     socket.on("getTokenFromDB", async (token) => {
       
       options.token = token;
-      console.log("rupam 2", token);
+      console.log("rupam 2", options);
       await agoraEngine.join(
         options.appId,
         options.channel,
