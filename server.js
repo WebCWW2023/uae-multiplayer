@@ -132,9 +132,14 @@ io.on("connection", (socket) => {
           ...playerVoiceList[data.roomName],
           [String(playerItem.socketName2)]: data,
         };
+        // io.to(data.roomName).emit(
+        //   "addAvtarToSidebar",
+        //   playerVoiceList[data.roomName]
+        // );
         io.to(data.roomName).emit(
-          "addAvtarToSidebar",
-          playerVoiceList[data.roomName]
+          "addVoiceId",{
+            myVoiceId:data.voiceId
+          }
         );
       }
     });

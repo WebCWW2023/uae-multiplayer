@@ -1,6 +1,6 @@
 const socket = io();
 var socketName;
-
+var myVoiceId;
 /*-----------------canvas-------------------*/
 import * as THREE from "three";
 import * as DAT from "../cdn/newadded/dat.js";
@@ -391,6 +391,10 @@ socket.on("connect", () => {
     voiceId: null,
   });
 });
+socket.on('myVoiceId',(data)=>{ 
+  myVoiceId=data.myVoiceId;
+  console.log('ok myVoiceId',myVoiceId);
+})
 const init = () => {
   /*-----------------loadingManager-------------------*/
   loadingManager = new THREE.LoadingManager(
@@ -814,7 +818,7 @@ const init = () => {
 
     playersPeerData[data.socketName2] = data;
     if (playersPeer[socketName] && playersPeer[socketName].children[0]) {
-	    console.log('ok 1',remoteUser)
+	    console.log('ok 1',remoteUser);
       let distance = playersPeer[socketName].children[0].position.distanceTo(
         playersPeer[data.socketName2].children[0].position
       ); 

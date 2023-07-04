@@ -1,3 +1,4 @@
+
 import { isadmin } from "../game.js";
  
 const socket = io();
@@ -25,6 +26,8 @@ var remoteUser = {};
 
 async function startBasicCall() {
   const agoraEngine = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
+
   agoraEngine.on("user-published", async (user, mediaType) => {
     await agoraEngine.subscribe(user, mediaType);
     console.log('rupam',user, mediaType);
@@ -50,6 +53,7 @@ async function startBasicCall() {
 
       console.log("rupam", token);
       options.token = token;
+      
       await agoraEngine.join(
         options.appId,
         options.channel,
