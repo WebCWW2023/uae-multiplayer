@@ -866,24 +866,27 @@ const init = () => {
 /*-----------------oka updatePlayerLocally-------------------*/
 const updatePlayerLocally = (animation) => {
   
-    // console.log('voiceIdArray',voiceIdArray); 
-    console.log('ok playersPeer',playersPeer);
-    // Object.values(playersPeer)
-    // voiceIdArray.map((voiceName)=>{
-    //   if(voiceName!==myVoiceId){
-    //      let distance = playersPeer[socketName].children[0].position.distanceTo(
-    //       playersPeer[data.socketName2].children[0].position
-    //     ); 
+  Object.values(playersPeer).map(player=>{
+    if(player.socketName2!==socketName){
+      let distance = playersPeer[socketName].children[0].position.distanceTo(
+       playersPeer[player.socketName2].children[0].position
+     ); 
+     
+     voiceIdArray.map(voiceId=>{
+      if(voiceId!==myVoiceId){
+        if (Object.keys(remoteUser).length) { 
+            if (distance < 8) {
+              remoteUser[voiceId].play();
+            } else {
+              remoteUser[voiceId].stop();
+            }
+          }
+      }
+     })
+    }
+  })
 
-    //   }
-    // })
-    // if (Object.keys(remoteUser).length) { 
-    //   if (distance < 8) {
-    //     remoteUser[data.voiceId].play();
-    //   } else {
-    //     remoteUser[data.voiceId].stop();
-    //   }
-    // }
+  
 
   let a = characherMixerArray[socketName];
   if (playersPeerToggle[socketName] == undefined) {
