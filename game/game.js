@@ -864,8 +864,7 @@ const init = () => {
 
 
 /*-----------------oka updatePlayerLocally-------------------*/
-const updatePlayerLocally = (animation) => {
-console.log('ok voiceIdArray',voiceIdArray);
+const updatePlayerLocally = (animation) => { 
   Object.values(playersPeer).map(player=>{
     if(player.socketName2!==socketName){
       let distance = playersPeer[socketName].children[0].position.distanceTo(
@@ -873,14 +872,13 @@ console.log('ok voiceIdArray',voiceIdArray);
      ); 
      
       voiceIdArray.map(voiceId=>{
-      if(voiceId && voiceId!==myVoiceId){ 
-        if (Object.keys(remoteUser).length) { 
-          console.log('ok remoteUser',remoteUser);
-            // if (distance < 8) {
-            //   remoteUser[voiceId].play();
-            // } else {
-            //   remoteUser[voiceId].stop();
-            // }
+      if(voiceId && voiceId!==myVoiceId && remoteUser[voiceId]){ 
+        if (Object.keys(remoteUser).length) {  
+            if (distance < 8) {
+              remoteUser[voiceId].play();
+            } else {
+              remoteUser[voiceId].stop();
+            }
           }
        }
       })
