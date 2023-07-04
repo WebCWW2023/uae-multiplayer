@@ -42,7 +42,10 @@ async function startBasicCall() {
     agoraEngine.on("user-unpublished", (user) => { });
   });
 
-  startVoice = () => {
+
+}
+
+ function startVoice () {
     console.log('rupam 1', agoraEngine);
     let search_params = new URL(window.location.href).searchParams;
     var avtarName = search_params.get("name");
@@ -98,13 +101,5 @@ async function startBasicCall() {
 
     });
   };
-  agoraEngine.enableAudioVolumeIndicator();
-  agoraEngine.on("volume-indicator", (volumes) => {
-    volumes.forEach((volume) => {
-      if (volume.level > 0) {
-      }
-    });
-  });
-  // console.clear()
-}
+
 export { startBasicCall, remoteUser, startVoice };
