@@ -873,15 +873,14 @@ const updatePlayerLocally = (animation) => {
      ); 
      
       voiceIdArray.map(voiceId=>{
-      if(voiceId!==myVoiceId){
-        console.log('ok voiceId',voiceId);
-    //     if (Object.keys(remoteUser).length) { 
-    //         if (distance < 8) {
-    //           remoteUser[voiceId].play();
-    //         } else {
-    //           remoteUser[voiceId].stop();
-    //         }
-    //       }
+      if(voiceId && voiceId!==myVoiceId){ 
+        if (Object.keys(remoteUser).length) { 
+            if (distance < 8) {
+              remoteUser[voiceId].play();
+            } else {
+              remoteUser[voiceId].stop();
+            }
+          }
        }
       })
     }
