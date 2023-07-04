@@ -391,7 +391,7 @@ socket.on("connect", () => {
     voiceId: null,
   });
 });
-socket.on('addVoiceId',(data)=>{ 
+socket.on('addMyVoiceId',(data)=>{ 
   myVoiceId=data.myVoiceId;
   console.log('ok myVoiceId',myVoiceId);
 })

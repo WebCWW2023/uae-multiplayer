@@ -137,7 +137,7 @@ io.on("connection", (socket) => {
         //   playerVoiceList[data.roomName]
         // );
         io.to(data.roomName).emit(
-          "addVoiceId",{
+          "addMyVoiceId",{
             myVoiceId:data.voiceId
           }
         );
