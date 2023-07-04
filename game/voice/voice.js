@@ -32,6 +32,7 @@ async function startBasicCall() {
     if (mediaType == "audio") {
       const remoteUid = user.uid;
       // Get the RemoteAudioTrack object from the AgoraRTCRemoteUser object.
+      console.log("true rupam");
       const remoteAudioTrack = user.audioTrack;
       remoteUser[remoteUid] = remoteAudioTrack;
       remoteAudioTrack.play();
