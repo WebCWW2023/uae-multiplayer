@@ -29,6 +29,7 @@ async function startBasicCall() {
   console.log(agoraEngine);
   agoraEngine.on("user-published", async (user, mediaType) => {
     await agoraEngine.subscribe(user, mediaType);
+    console.log('ok mediaType',mediaType ); 
     if (mediaType == "audio") {
       const remoteUid = user.uid;
       // Get the RemoteAudioTrack object from the AgoraRTCRemoteUser object.
