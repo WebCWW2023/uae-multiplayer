@@ -817,7 +817,6 @@ const init = () => {
 
     playersPeerData[data.socketName2] = data;
     if (playersPeer[socketName] && playersPeer[socketName].children[0]) {
-	    console.log('ok 1',remoteUser);
       let distance = playersPeer[socketName].children[0].position.distanceTo(
         playersPeer[data.socketName2].children[0].position
       ); 
