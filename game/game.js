@@ -822,9 +822,9 @@ const init = () => {
       let distance = playersPeer[socketName].children[0].position.distanceTo(
         playersPeer[data.socketName2].children[0].position
       ); 
-      if(!voiceIdArray.includes(data.voiceId)){
-        voiceIdArray.push(data.voiceId);
-      }
+      // if(!voiceIdArray.includes(data.voiceId)){
+      //   voiceIdArray.push(data.voiceId);
+      // }
 
       if (Object.keys(remoteUser).length) { 
         if (distance < 8) {
