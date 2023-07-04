@@ -872,8 +872,9 @@ const updatePlayerLocally = (animation) => {
        playersPeer[player.socketName2].children[0].position
      ); 
      
-    //  voiceIdArray.map(voiceId=>{
-    //   if(voiceId!==myVoiceId){
+      voiceIdArray.map(voiceId=>{
+      if(voiceId!==myVoiceId){
+        console.log('ok voiceId',voiceId);
     //     if (Object.keys(remoteUser).length) { 
     //         if (distance < 8) {
     //           remoteUser[voiceId].play();
@@ -881,8 +882,8 @@ const updatePlayerLocally = (animation) => {
     //           remoteUser[voiceId].stop();
     //         }
     //       }
-    //   }
-    //  })
+       }
+      })
     }
   })
 
