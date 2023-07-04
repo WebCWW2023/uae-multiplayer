@@ -4,7 +4,7 @@ const socket = io();
 
 let options = {
   // Pass your App ID here.
-  appId: "3cfa260fc2024b9ea344541f797bd171",
+  appId: "aa6bd939aae94c179e8fb5f7ab619222",
   // Set the channel name.
   channel: "",
   // Pass your temp token here.
@@ -46,6 +46,8 @@ async function startBasicCall() {
     options.channel = roomName;
      socket.emit("checkAgoraToken", roomName);
     socket.on("getTokenFromDB", async (token) => {
+
+      console.log("rupam", token);
       options.token = token;
       await agoraEngine.join(
         options.appId,
