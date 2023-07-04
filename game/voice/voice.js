@@ -42,6 +42,7 @@ async function startBasicCall() {
   });
 
   startVoice = () => {
+    console.log('rupam1', agoraEngine);
     let search_params = new URL(window.location.href).searchParams;
     var avtarName = search_params.get("name");
     var roomName = search_params.get("room");
@@ -58,6 +59,8 @@ async function startBasicCall() {
         options.uid
       );
       /*------------------------------------*/
+
+      console.log('rupam2', agoraEngine);
 
       socket.emit("addVoiceId", {
         voiceId: agoraEngine.uid,
