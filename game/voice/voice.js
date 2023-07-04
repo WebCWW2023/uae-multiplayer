@@ -25,6 +25,8 @@ var remoteUser = {};
 
 async function startBasicCall() { 
   const agoraEngine = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
+  console.log(agoraEngine);
   agoraEngine.on("user-published", async (user, mediaType) => {
     await agoraEngine.subscribe(user, mediaType);
     if (mediaType == "audio") {
