@@ -89,12 +89,12 @@ async function startBasicCall() {
     });
   };
   agoraEngine.enableAudioVolumeIndicator();
-  // agoraEngine.on("volume-indicator", (volumes) => {
-  //   volumes.forEach((volume) => {
-  //     if (volume.level > 0) {
-  //     }
-  //   });
-  // });
+  agoraEngine.on("volume-indicator", (volumes) => {
+    volumes.forEach((volume) => {
+      if (volume.level > 0) {
+      }
+    });
+  });
   // console.clear()
 }
 export { startBasicCall, remoteUser, startVoice };
