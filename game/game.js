@@ -860,7 +860,7 @@ const init = () => {
 /*-----------------oka updatePlayerLocally-------------------*/
 const updatePlayerLocally = (animation) => {
   if (playersPeer[socketName] && playersPeer[socketName].children[0]) {
-    console.log('playersPeer',playersPeer);
+    console.log('playersPeerData',playersPeerData); 
     //  let distance = playersPeer[socketName].children[0].position.distanceTo(
     //   playersPeer[data.socketName2].children[0].position
     // ); 
