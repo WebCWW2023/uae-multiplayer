@@ -20,7 +20,7 @@ let channelParameters = {
 };
 
 var muteButton;
-var startVoice;
+
 var remoteUser = {};
 
 async function startBasicCall() { 
