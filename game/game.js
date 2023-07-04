@@ -876,11 +876,11 @@ const updatePlayerLocally = (animation) => {
       if(voiceId && voiceId!==myVoiceId){ 
         if (Object.keys(remoteUser).length) { 
           console.log('ok',remoteUser[voiceId]);
-            if (distance < 8) {
-              remoteUser[voiceId].play();
-            } else {
-              remoteUser[voiceId].stop();
-            }
+            // if (distance < 8) {
+            //   remoteUser[voiceId].play();
+            // } else {
+            //   remoteUser[voiceId].stop();
+            // }
           }
        }
       })
