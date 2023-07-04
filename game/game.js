@@ -857,18 +857,7 @@ const init = () => {
 
 /*-----------------oka updatePlayerLocally-------------------*/
 const updatePlayerLocally = (animation) => {
-	if (playersPeer[socketName] && playersPeer[socketName].children[0]) {
-      let distance = playersPeer[socketName].children[0].position.distanceTo(
-        playersPeer[data.socketName2].children[0].position
-      );
-      if (Object.keys(remoteUser).length) {
-        if (distance < 8) {
-          remoteUser[data.voiceId].play();
-        } else {
-          remoteUser[data.voiceId].stop();
-        }
-      }
-	}
+	
   let a = characherMixerArray[socketName];
   if (playersPeerToggle[socketName] == undefined) {
     playersPeerToggle[socketName] = {};
