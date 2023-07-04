@@ -818,8 +818,9 @@ const init = () => {
       let distance = playersPeer[socketName].children[0].position.distanceTo(
         playersPeer[data.socketName2].children[0].position
       );
+	     console.log('ok 2',distance)
       if (Object.keys(remoteUser).length) {
-	      console.log('ok 2')
+	      console.log('ok 3')
         if (distance < 8) {
           remoteUser[data.voiceId].play();
         } else {
