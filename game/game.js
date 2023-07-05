@@ -557,7 +557,7 @@ const init = () => {
         myPlayer = playersPeer[socketName].children[0];
         UpdateMaterial(objectArray);
         addBanner();
-        // startVoice();
+        startVoice();
         socket.emit("getAllPlayerData", { roomName: roomName });
         isFirstTimeLoaded = false;
       }
