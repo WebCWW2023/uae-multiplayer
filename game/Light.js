@@ -32,14 +32,14 @@ const directionalLightM = (gui, lightGroup, helperGroup, x, y, z, xr, yr, zr, in
     directionalLight.shadow.mapSize.height = 512
 
     directionalLight.shadow.camera.near = 10
-    directionalLight.shadow.camera.far = 60
+    directionalLight.shadow.camera.far = 300
 
-    directionalLight.shadow.camera.top = 60
-    directionalLight.shadow.camera.right = 60
-    directionalLight.shadow.camera.bottom = - 60
-    directionalLight.shadow.camera.left = - 60
-    directionalLight.shadow.bias = -0.03;
-    // gui.add(directionalLight.shadow, 'bias', -1, 1, 0.001)
+    directionalLight.shadow.camera.top = 400
+    directionalLight.shadow.camera.right = 400
+    directionalLight.shadow.camera.bottom = - 400
+    directionalLight.shadow.camera.left = - 400
+    directionalLight.shadow.bias = -0.0045;
+
     lightGroup.add(directionalLight);
     lightGui && directionalLightGUI(gui, directionalLight, 'directionalLight');
     const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);

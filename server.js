@@ -7,35 +7,39 @@ const io = require("socket.io")(server, {
 });
 var mysql = require("mysql2");
 var moment = require("moment");
-const webrtc = require("wrtc");
 const tokenGenerator = require("./tokenGeneration").generateToken;
 
-
-
 /*-----------------database connection-------------------*/
-var con = mysql.createConnection({
- 
+var con;
+ con = mysql.createConnection({
   host: "13.200.71.91",
   user: "worldbeyond_worldbeyond2023",
   password: "e^gU@]1t_1YI",
   database: "worldbeyond_metaverse2023",
-  
-  });
+});
 
 app.use(express.static("."));
 
 /*-----------------admin-------------------*/
-
 app.get("/a", (req, res) => {
   res.redirect(`/game/admin.html`);
 });
 
 /*-----------------public-------------------*/
 app.get("", (req, res) => {
-  res.redirect(`game/game.html?id=1&name=ashish&isadmin=true&room=test-hall2`);
+  res.redirect(`game/game.html?id=1&name=ashish&isadmin=true&room=test`);
 });
 app.get("/2", (req, res) => {
-  res.redirect(`game/game.html?id=2&name=mohit&isadmin=true&room=test-hall2`);
+  res.redirect(`game/game.html?id=2&name=a2&isadmin=true&room=test`);
+});
+app.get("/3", (req, res) => {
+  res.redirect(`game/game.html?id=3&name=a3&isadmin=true&room=test`);
+});
+app.get("/4", (req, res) => {
+  res.redirect(`game/game.html?id=4&name=a4&isadmin=true&room=test`);
+});
+app.get("/4", (req, res) => {
+  res.redirect(`game/game.html?id=5&name=a5&isadmin=true&room=test`);
 });
 
 var playerList = {};
@@ -47,77 +51,79 @@ io.on("connection", (socket) => {
   socket.on("checkAgoraToken", (roomName) => {
     let agoraToken;
     var CurrentDate = moment();
-    con.connect(function (err) {
-      if (err) throw err;
-      con.query(
-        `SELECT token, time_stamp FROM agora_token where room_name= "${roomName}"`,
-        function (err, result, fields) {
-          if (err) throw err;
+    con &&
+      con.connect(function (err) {
+        if (err) throw err;
+        con.query(
+          `SELECT token, time_stamp FROM agora_token where room_name= "${roomName}"`,
+          function (err, result, fields) {
+            if (err) throw err;
 
-          if (result && result.length > 0) {
-            const period = CurrentDate.diff(result[0].time_stamp, "seconds");
-            if (period > 86400) {
+            if (result && result.length > 0) {
+              const period = CurrentDate.diff(result[0].time_stamp, "seconds");
+              if (period > 86400) {
+                const newToken = tokenGenerator(roomName);
+                const updateRow = `update agora_token set token="${newToken}", time_stamp="${CurrentDate.format()}" where room_name="${roomName}"`;
+                con.connect(function (err) {
+                  if (err) throw err;
+                  con.query(updateRow, function (err, result, fields) {
+                    if (err) throw err;
+                  });
+                });
+                socket.emit("getTokenFromDB", newToken);
+              } else {
+                socket.emit("getTokenFromDB", result[0].token);
+              }
+            } else {
+              const randomID = Math.random().toString().slice(2, 11);
               const newToken = tokenGenerator(roomName);
-              const updateRow = `update agora_token set token="${newToken}", time_stamp="${CurrentDate.format()}" where room_name="${roomName}"`;
+              const insertRow = `insert into agora_token values (${randomID},"${newToken}","${roomName}","${CurrentDate.format()}" )`;
               con.connect(function (err) {
                 if (err) throw err;
-                con.query(updateRow, function (err, result, fields) {
+                con.query(insertRow, function (err, result, fields) {
                   if (err) throw err;
                 });
               });
               socket.emit("getTokenFromDB", newToken);
-            } else {
-              socket.emit("getTokenFromDB", result[0].token);
             }
-          } else {
-            const randomID = Math.random().toString().slice(2, 11);
-            const newToken = tokenGenerator(roomName);
-            const insertRow = `insert into agora_token values (${randomID},"${newToken}","${roomName}","${CurrentDate.format()}" )`;
-            con.connect(function (err) {
-              if (err) throw err;
-              con.query(insertRow, function (err, result, fields) {
-                if (err) throw err;
-              });
-            });
-            socket.emit("getTokenFromDB", newToken);
           }
-        }
-      );
-    });
+        );
+      });
   });
-  /*-----------------addPlayer-------------------*/
-  socket.on("addPlayer", (data) => {
+  /*-----------------addMeToOther-------------------*/
+  socket.on("addMeToOther", (data) => {
     if (data.socketName2) {
       socket.join(data.roomName);
       playerList[data.roomName] = {
         ...playerList[data.roomName],
         [String(data.socketName2)]: data,
       };
-      io.to(data.roomName).emit("addPlayer", playerList[data.roomName]);
+      socket.to(data.roomName).emit("addMeToOther", data);
     }
+  });
+  socket.on("addData", (data) => {
+    socket.join(data.roomName);
+    playerList[data.roomName] = {
+      ...playerList[data.roomName],
+      [String(data.socketName2)]: data,
+    };
+  });
+  socket.on("getAllPlayerData", (data) => {
+    io.emit("getAllPlayerData", playerList[data.roomName]);
   });
 
   /*-----------------updatePlayer-------------------*/
   socket.on("updatePlayer", (data) => {
-    const roomName = data.roomName;
-    const socketId = String(data.socketName2);
+    let roomName = data.roomName;
+    let socketId = String(data.socketName2);
 
-    if (!playerList[roomName]) {
-      playerList[roomName] = {};
+    if (playerList[roomName] && playerList[roomName][socketId]) {
+      playerList[roomName][socketId].position = data.position;
+      playerList[roomName][socketId].rotation = data.rotation;
+      data.voiceId = playerList[roomName][socketId].voiceId;
+      playerList[roomName][socketId].animationName = data.animation;
+      socket.to(roomName).emit("updatePlayer", data);
     }
-
-    if (!playerList[roomName][socketId]) {
-      playerList[roomName][socketId] = {
-        position: { x: "", y: "", z: "" },
-        rotation: { x: "", y: "", z: "" },
-        voiceId: "",
-      };
-    }
-
-    playerList[roomName][socketId].position = data.position;
-    playerList[roomName][socketId].rotation = data.rotation;
-    data.voiceId = playerList[roomName][socketId].voiceId;
-    socket.to(data.roomName).emit("updatePlayer", data);
   });
 
   /*-----------------addVoiceId-------------------*/
@@ -132,20 +138,12 @@ io.on("connection", (socket) => {
           ...playerVoiceList[data.roomName],
           [String(playerItem.socketName2)]: data,
         };
-        // io.to(data.roomName).emit(
-        //   "addAvtarToSidebar",
-        //   playerVoiceList[data.roomName]
-        // );
         io.to(data.roomName).emit(
-          "addMyVoiceId",{
-            myVoiceId:data.voiceId
-          }
+          "addAvtarToSidebar",
+          playerVoiceList[data.roomName]
         );
       }
     });
-    // console.log('---------------------:',)
-    // console.log('playerList:', playerList)
-    // console.log('playerVoiceList:', playerVoiceList)
   });
 
   /*-----------------createEmoji-------------------*/
@@ -167,7 +165,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const player = getPlayerBySocketId2(socket.id);
     if (player) {
-      socket.broadcast.emit("removePlayer", {
+      io.to(player.roomName).emit("removePlayer", {
         socketName2: player.avtarName,
       });
     }

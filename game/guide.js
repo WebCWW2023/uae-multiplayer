@@ -1,4 +1,5 @@
- 
+
+
 var uiFormSlide = {
 init: function() {
 this.steps = $(".ui-formSlide > [data-step]");
@@ -64,7 +65,6 @@ uiFormSlide.init();
 
 $("#btnNext").click(function() {
 uiFormSlide.next();
-console.log("next");
 });
 $("#btnPrev").click(function() {
 uiFormSlide.prev();

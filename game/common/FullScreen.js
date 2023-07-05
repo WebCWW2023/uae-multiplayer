@@ -1,7 +1,7 @@
 var isScreenFull = false;
+
 const openFullscreen = () => {
   if (document.fullscreenEnabled) {
-    console.log('ok:',)
     if (!isScreenFull) {
       document.documentElement.requestFullscreen()
       isScreenFull = true;
@@ -12,7 +12,6 @@ const openFullscreen = () => {
   }
 }
 const FullScreenM = (fullScreen) => {
-
   fullScreen.addEventListener('click', () => {
     openFullscreen();
   });

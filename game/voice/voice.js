@@ -1,4 +1,3 @@
-
 import { isadmin } from "../game.js";
  
 const socket = io();
@@ -26,11 +25,8 @@ var remoteUser = {};
 
 async function startBasicCall() {
   const agoraEngine = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-
-
   agoraEngine.on("user-published", async (user, mediaType) => {
     await agoraEngine.subscribe(user, mediaType);
-    console.log('rupam',user, mediaType);
     if (mediaType == "audio") {
       const remoteUid = user.uid;
       // Get the RemoteAudioTrack object from the AgoraRTCRemoteUser object.
@@ -50,10 +46,7 @@ async function startBasicCall() {
     options.channel = roomName;
      socket.emit("checkAgoraToken", roomName);
     socket.on("getTokenFromDB", async (token) => {
-
-      console.log("rupam", token);
       options.token = token;
-      
       await agoraEngine.join(
         options.appId,
         options.channel,

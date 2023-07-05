@@ -47,7 +47,7 @@
         const socket = io();
         socket.on('connect', () => {
             socket.emit('receiveData');
-            socket.on('receiveData', function (data) {
+            socket.on('receiveData', function (data) { 
                 let table = document.getElementById("playerTable");
 
                 Object.values(data).map(players => {
@@ -78,9 +78,10 @@
 
                         c7.onclick = function () {
                             let data = {
-                                avtarName: singleplayer.avtarName,
-                                roomName: singleplayer.roomName,
                                 socket_id: singleplayer.socket_id,
+                                avtarName: singleplayer.avtarName,
+                                socketName2: singleplayer.avtarName,
+                                roomName: singleplayer.roomName,
                             }
                             socket.emit('deletePlayerAdmin', data);
                             // window.location.reload();

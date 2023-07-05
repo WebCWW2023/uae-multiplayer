@@ -125,9 +125,17 @@ button:focus {
   .wrapper {
     width: 60%;
   }
+/*  .shortcut {*/
+/* display:none;*/
+/*}*/
+  
 }
 @media only screen and (max-width: 600px) {
   .wrapper {
     width: 80%;
+    
   }
+/*  .shortcut {*/
+/* display:none;*/
+/*}*/
 }

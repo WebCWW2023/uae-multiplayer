@@ -1,28 +1,11 @@
-const ChangeView = (cameraPosition, avtarViewCount) => {
-
-    if (avtarViewCount === 2) {
-        avtarViewCount = 0;
-    }
-    if (avtarViewCount === 0) {
-        cameraPosition = {
-            x: 0,
-            y: 0.6,
-            z: 5.0
-        }
-    }
-    else if (avtarViewCount === 1) {
-        cameraPosition = {
-          x: 0,
-          y: 5,
-          z: 20
-        }
-        // cameraPosition = {
-        //     x: 0,
-        //     y: 50,
-        //     z: 155
-        // }
-    }
-    avtarViewCount++;
-    return [cameraPosition, avtarViewCount]
-}
-export { ChangeView }
+const ChangeView = (myAvtar, avtarViewCount) => {
+  if (avtarViewCount === 0) {
+    myAvtar.children[0].children[2].position.set(0, 0.6, 0);
+  } else if (avtarViewCount === 1) {
+    myAvtar.children[0].children[2].position.set(0, 3.6, 15);
+    // myAvtar.children[0].children[2].position.set(0, 35,125);
+  } else if (avtarViewCount === 2) {
+    myAvtar.children[0].children[2].position.set(0, 0.6, 5.5);
+  }
+};
+export { ChangeView };

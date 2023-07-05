@@ -63,9 +63,9 @@ const directionalLightGUI = (gui, obj, name) => {
     directionalLightFolder.add(obj.position, 'x').min(-1000).max(1000).step(0.1).name(`${name} P x`)
     directionalLightFolder.add(obj.position, 'y').min(-1000).max(1000).step(0.1).name(`${name} P y`)
     directionalLightFolder.add(obj.position, 'z').min(-1000).max(1000).step(0.1).name(`${name} P z`)
-    directionalLightFolder.add(obj.rotation, 'x').min(-1000).max(1000).step(0.1).name(`${name} R x`)
-    directionalLightFolder.add(obj.rotation, 'y').min(-1000).max(1000).step(0.1).name(`${name} R y`)
-    directionalLightFolder.add(obj.rotation, 'z').min(-1000).max(1000).step(0.1).name(`${name} R z`)
+    directionalLightFolder.add(obj.rotation, 'x').min(-1000).max(1000).step(0.1).name(`${name} P x`)
+    directionalLightFolder.add(obj.rotation, 'y').min(-1000).max(1000).step(0.1).name(`${name} P y`)
+    directionalLightFolder.add(obj.rotation, 'z').min(-1000).max(1000).step(0.1).name(`${name} P z`)
     return directionalLightFolder;
 }
 /** 

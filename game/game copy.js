@@ -38,6 +38,7 @@ import { Sitting } from "./Different/Sitting.js";
 // import { AddPlayer } from "./common/AddPlayer.js";
 import { WalkCollision } from "./common/WalkCollision.js";
 import { CheckOrientation } from "./common/CheckOrientation.js";
+import { OrbitControls } from "../cdn/controls/OrbitControls.js";
 /*----------------- gui -------------------*/
 var gui;
 // gui = new DAT.GUI();
@@ -82,15 +83,14 @@ var canvas,
   stats;
 
 //camera
-var camera2;
+var camera, controls;
 const direction = new THREE.Vector3();
 
 /*-----------------avtar-------------------*/
-var myPlayer;
 var avtarAction = {};
-var walkspeed = 5.0;
-var walkspeedSlow = 5.0;
-var walkspeedFast = 10.0;
+var walkspeed = 12.0;
+var walkspeedSlow = 12.0;
+var walkspeedFast = 20.0;
 var walkRotateSpeed = 1.0;
 var avtarViewCount = 0;
 var isSpeed = false;
@@ -143,13 +143,11 @@ var loadingManager;
 var sittingLoaderMesh;
 var isSitting = false;
 var sittingLoaderMeshArray = [];
-//raycaster
+/*-----------------raycaster-------------------*/
 var objectArray = [];
 var playersPeer = {};
 var playersPeerData = {};
 var playersPeerToggle = {};
-var infoMeshArray = [];
-var bannerMeshArray = [];
 
 var enableForward = true,
   enableBackward = true,
@@ -179,6 +177,7 @@ snowGroup.name = "snowGroup";
 /*-----------------texure-------------------*/
 var mouse = new THREE.Vector2();
 var bannerNameArray = [];
+var bannerMeshArray = [];
 var mouseRaycaster = new THREE.Raycaster();
 /*-----------------joystick-------------------*/
 var joystickX = 0,
@@ -206,7 +205,6 @@ var fullScreen = document.querySelector(".fullScreen");
 
 var screenButtonToggle = document.querySelector(".screenButtonToggle");
 var screenButtonBottom = document.querySelector(".screenButtonBottom");
-var viewB = document.querySelector(".viewB");
 var shortcutB = document.querySelector(".shortcutB");
 var raiseB = document.querySelector(".raiseB");
 var shakeB = document.querySelector(".shakeB");
@@ -246,9 +244,6 @@ const htmlEvents = () => {
     }
   });
   document.addEventListener("keyup", function (e) {
-    if (!myPlayer) {
-      return;
-    }
     if (e.code === "KeyH") {
       shorcutKeyScreen.style.display = "flex";
     }
@@ -266,7 +261,11 @@ const htmlEvents = () => {
       }
       async function createHeartLoop() {
         for (let i = 0; i < 25; i++) {
-          createHeart(emojiname, heartsGroup, myPlayer.position);
+          createHeart(
+            emojiname,
+            heartsGroup,
+            playersPeer[socketName].children[0].position
+          );
           await delay(100); // Wait for one second
         }
       }
@@ -275,7 +274,7 @@ const htmlEvents = () => {
       socket.emit("createEmoji", {
         emojiname: "heart",
         roomName: roomName,
-        playerPosition: myPlayer.position,
+        playerPosition: playersPeer[socketName].children[0].position,
       });
     }
     if (e.code === "KeyC") {
@@ -326,14 +325,6 @@ const htmlEvents = () => {
     shorcutKeyScreen.style.display = "flex";
   });
 
-  viewB.addEventListener("click", (e) => {
-    if (avtarViewCount === 3) {
-      avtarViewCount = 0;
-    }
-    ChangeView(playersPeer[socketName], avtarViewCount);
-    avtarViewCount++;
-  });
-
   raiseB.addEventListener("click", (e) => {
     updatePlayerLocally("Hand_Raise");
     updatePlayerGloally("Hand_Raise");
@@ -358,7 +349,11 @@ const htmlEvents = () => {
             };
             async function createHeartLoop() {
               for (let i = 0; i < 25; i++) {
-                createHeart(emojiname, heartsGroup, myPlayer.position);
+                createHeart(
+                  emojiname,
+                  heartsGroup,
+                  playersPeer[socketName].children[0].position
+                );
                 await delay(100);
               }
             }
@@ -366,7 +361,7 @@ const htmlEvents = () => {
             socket.emit("createEmoji", {
               emojiname: emojiname,
               roomName: roomName,
-              playerPosition: myPlayer.position,
+              playerPosition: playersPeer[socketName].children[0].position,
             });
           }
         });
@@ -457,14 +452,12 @@ const AddPlayer = (isme, isFirstTimeMyPlayerLoading, data) => {
         let playerGroup = new THREE.Group();
         playerGroup.name = data.avtarName;
         if (data.socketName2 === socketName) {
-          let camera = new THREE.PerspectiveCamera(
-            35,
-            window.innerWidth / window.innerHeight,
-            1,
-            300
+          camera.position.set(
+            characterMesh.position.x,
+            characterMesh.position.y + 1.5,
+            characterMesh.position.z + 7
           );
-          camera.position.copy(chracterCameraPosition);
-          characterMesh.add(camera);
+          controls.target = characterMesh.position;
         } else {
           objectArray.push(characterMesh);
         }
@@ -553,9 +546,9 @@ const init = () => {
         booster_button.style.display = "block";
       }
       if (isFirstTimeLoaded) {
-        camera2 = playersPeer[socketName].children[0].children[2];
-        myPlayer = playersPeer[socketName].children[0];
-        UpdateMaterial(objectArray);
+        bannerMeshArray = bannerNameArray.map((item) =>
+          scene.getObjectByName(item)
+        );
         addBanner();
         // startVoice();
         socket.emit("getAllPlayerData", { roomName: roomName });
@@ -600,8 +593,8 @@ const init = () => {
       socket.emit("addData", {
         socket_id: socket.id,
         socketName2: socketName,
-        position: myPlayer.position,
-        rotation: myPlayer.rotation,
+        position: playersPeer[socketName].children[0].position,
+        rotation: playersPeer[socketName].children[0].rotation,
         avtarId: avtarId,
         avtarName: avtarName,
         roomName: roomName,
@@ -637,12 +630,9 @@ const init = () => {
     preserveDrawingBuffer: true,
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.shadowMapSoft = true;
-  renderer.shadowMap.enabled = isMobile ? false : false;
+  renderer.shadowMap.enabled = isMobile ? true : true;
 
   labelRenderer = new CSS2DRenderer();
   labelRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -653,25 +643,34 @@ const init = () => {
   statsGui && document.body.appendChild(stats.dom);
   /*-----------------Scene-------------------*/
   scene = sceneM("gui");
+  camera = new THREE.PerspectiveCamera(
+    35,
+    window.innerWidth / window.innerHeight,
+    1,
+    500
+  );
 
+  controls = new OrbitControls(camera, labelRenderer.domElement);
+  controls.enableDamping = true;
+  controls.enableZoom = false;
+  controls.enablePan = false;
+  controls.dampingFactor = 0.6;
+  controls.screenSpacePanning = false;
+  controls.maxPolarAngle = Math.PI / 1.9; // lock the camera angle
+  controls.addEventListener("change", () => {});
   /*-----------------light-------------------*/
-  ambientLightM(gui, lightGroup, 1.1, 0xe2e3f8, lightGui);
-  // hemisphereLightM(gui, lightGroup, 0.3, 0xc7dbf5, 0x8888aa, lightGui);
-
-  // directionalLightM(
-  //   gui,
-  //   lightGroup,
-  //   helperGroup,
-  //   -30,
-  //   250,
-  //   0,
-  //   0,
-  //   0,
-  //   0,
-  //   1.0,
-  //   0xffffff,
-  //   lightGui
-  // );
+  ambientLightM(gui, lightGroup, 0.4, 0xffffff, lightGui);
+  directionalLightM(
+    gui,
+    lightGroup,
+    helperGroup,
+    37.1,
+    105.5,
+    0,
+    0.8,
+    0xffffff,
+    lightGui
+  );
 
   /*-----------------mainModel okg-------------------*/
   const dracoLoader = new DRACOLoader();
@@ -700,7 +699,9 @@ const init = () => {
             n.material.depthWrite = true;
             n.material.metalness = 0.5;
             n.material.roughness = 0.6;
+            UpdateMaterial(n);
             addObjectToArray(n);
+            Sitting(n, mainModel);
           }
         });
 
@@ -711,7 +712,7 @@ const init = () => {
           modelAction.play();
         }
         /*-----------------water-------------------*/
-        const waterGeometry = new THREE.CircleGeometry(2, 40);
+        const waterGeometry = new THREE.PlaneGeometry(40, 40);
         water = new Water(waterGeometry, {
           textureWidth: 512,
           textureHeight: 512,
@@ -721,17 +722,17 @@ const init = () => {
               texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
             }
           ),
-          waterColor: 0x6191a8,
+          waterColor: 0x001e0f,
           distortionScale: 3.7,
         });
         water.rotation.x = -Math.PI / 2;
-        water.position.set(8.5, 0.43, 107.2);
-        water.scale.set(1.5, 1.4, 1);
+        water.position.set(112.2, 8.6, 28.1);
+        water.scale.set(1.25, 0.75, 1);
         cityGroup.add(water);
         /*------------------------------------*/
         cityGroup.add(mainModel.scene);
         /*------------------------------------*/
-        // UpdateMesh(gui);
+        UpdateMesh(cityGroup, mainModel, gui);
         /*-----------------sittingLoader-------------------*/
         const m1Geometry = new THREE.TetrahedronGeometry(0.2, 0);
         const m1Material = new THREE.MeshBasicMaterial({
@@ -749,6 +750,24 @@ const init = () => {
           sittingLoaderMeshArray.push(sittingLoader);
           cityGroup.add(sittingLoader);
         };
+        sittingLoader(-157.2, 1.3, 34.3);
+        sittingLoader(-156.8, 1.3, 35.9);
+        sittingLoader(-156.65, 1.3, 37.5);
+        sittingLoader(-156.62, 1.3, 39.15);
+        sittingLoader(-156.8, 1.3, 40.8);
+        sittingLoader(-157.2, 1.3, 42.45);
+        sittingLoader(-159.3, 1.3, 35.35);
+        sittingLoader(-159.08, 1.3, 36.95);
+        sittingLoader(-159, 1.3, 38.55);
+        sittingLoader(-159.1, 1.3, 40.25);
+        sittingLoader(-159.35, 1.3, 41.7);
+        sittingLoader(-161.1, 1.3, 36.4);
+        sittingLoader(-161, 1.3, 37.9);
+        sittingLoader(-160.95, 1.3, 39.4);
+        sittingLoader(-161.08, 1.3, 40.5);
+        sittingLoader(-162.55, 1.3, 36.85);
+        sittingLoader(-162.45, 1.3, 38.45);
+        sittingLoader(-162.6, 1.3, 40.15);
       },
       (xhr) => {
         let total = (xhr.loaded / xhr.total) * 100;
@@ -770,8 +789,7 @@ const init = () => {
             scene.background = cubeTexture;
             let lightProbe = new THREE.LightProbe();
             lightProbe.copy(LightProbeGenerator.fromCubeTexture(cubeTexture));
-            lightProbe.intensity = 1.5;
-            lightGui && gui.add(lightProbe, "intensity", 0, 10, 0.1);
+            lightProbe.intensity = 1.2;
             lightGroup.add(lightProbe);
           });
         }
@@ -789,16 +807,12 @@ const init = () => {
   /*-----------------mousemove events-------------------*/
 
   window.addEventListener("click", (e) => {
-    if (camera2 && !isPopupOn && playersPeer[socketName]) {
+    if (!isPopupOn && playersPeer[socketName]) {
       mouse.x = (e.clientX / sizes.width) * 2 - 1;
       mouse.y = -(e.clientY / sizes.height) * 2 + 1;
-      mouseRaycaster.setFromCamera(mouse, camera2);
+      mouseRaycaster.setFromCamera(mouse, camera);
       const textureUpdateRayCaster =
         mouseRaycaster.intersectObjects(bannerMeshArray);
-      const sittingRayCaster =
-        mouseRaycaster.intersectObjects(sittingMeshArray);
-      const infoRayCaster = mouseRaycaster.intersectObjects(infoMeshArray);
-
       if (textureUpdateRayCaster.length > 0) {
         const changeTexture = (name) => {
           if (textureUpdateRayCaster[0].object.name === `${name}`) {
@@ -821,6 +835,8 @@ const init = () => {
         }
       }
       /*-----------------sitting-------------------*/
+      const sittingRayCaster =
+        mouseRaycaster.intersectObjects(sittingMeshArray);
       if (sittingRayCaster.length > 0) {
         // ChangeView(playersPeer[socketName], 0);
         // avtarViewCount = 1;
@@ -943,12 +959,11 @@ const init = () => {
       }
     }
   });
-
-  window.addEventListener("dblclick", (e) => {
-    if (!isMobile && camera2) {
+  !isMobile &&
+    window.addEventListener("dblclick", (e) => {
       mouse.x = (e.clientX / sizes.width) * 2 - 1;
       mouse.y = -(e.clientY / sizes.height) * 2 + 1;
-      mouseRaycaster.setFromCamera(mouse, camera2);
+      mouseRaycaster.setFromCamera(mouse, camera);
       const intersects = mouseRaycaster.intersectObjects(objectArray);
       if (
         intersects.length > 0 &&
@@ -960,20 +975,23 @@ const init = () => {
           z: intersects[0].point.z,
         };
         playersPeer[socketName].children[0].position.copy(playerNewPosition);
+        camera.position.set(
+          playersPeer[socketName].children[0].position.x,
+          playersPeer[socketName].children[0].position.y + 1.5,
+          playersPeer[socketName].children[0].position.z + 7
+        );
         updatePlayerGloally("Idle");
       }
-    }
-  });
+    });
   let lastTouchTime = 0;
   isMobile &&
     window.addEventListener(
       "touchstart",
       function (event) {
-        // if(isMobile && camera2)
         const currentTime = new Date().getTime();
         const timeDiff = currentTime - lastTouchTime;
         if (timeDiff < 300) {
-          mouseRaycaster.setFromCamera(mouse, camera2);
+          mouseRaycaster.setFromCamera(mouse, camera);
           let intersects = mouseRaycaster.intersectObjects(objectArray);
           if (
             intersects.length > 0 &&
@@ -986,6 +1004,11 @@ const init = () => {
             };
             playersPeer[socketName].children[0].position.copy(
               playerNewPosition
+            );
+            camera.position.set(
+              playersPeer[socketName].children[0].position.x,
+              playersPeer[socketName].children[0].position.y + 1.5,
+              playersPeer[socketName].children[0].position.z + 7
             );
             updatePlayerGloally("Idle");
           }
@@ -1061,8 +1084,8 @@ const init = () => {
 
     playersPeerData[data.socketName2] = data;
 
-    if (playersPeer[socketName] && myPlayer) {
-      let distance = myPlayer.position.distanceTo(
+    if (playersPeer[socketName] && playersPeer[socketName].children[0]) {
+      let distance = playersPeer[socketName].children[0].position.distanceTo(
         playersPeer[data.socketName2].children[0].position
       );
       if (Object.keys(remoteUser).length) {
@@ -1101,7 +1124,7 @@ const init = () => {
       width: window.innerWidth,
       height: window.innerHeight,
     }),
-      resizeM(playersPeer, renderer, labelRenderer, socketName);
+      resizeM(camera, renderer, labelRenderer, socketName);
   });
   // console.clear();
 };
@@ -1150,14 +1173,13 @@ const updatePlayerLocally = (animation) => {
 /*-----------------oka updatePlayerGloally-------------------*/
 
 const updatePlayerGloally = (animation) => {
-  myPlayer &&
-    socket.emit("updatePlayer", {
-      socketName2: socketName,
-      position: myPlayer.position,
-      rotation: myPlayer.rotation,
-      animation: animation,
-      roomName: roomName,
-    });
+  socket.emit("updatePlayer", {
+    socketName2: socketName,
+    position: playersPeer[socketName].children[0].position,
+    rotation: playersPeer[socketName].children[0].rotation,
+    animation: animation,
+    roomName: roomName,
+  });
 };
 
 /*-----------------joystick-------------------*/
@@ -1191,8 +1213,8 @@ isMobile &&
     updatePlayerLocally("Idle");
     socket.emit("updatePlayer", {
       socketName2: socketName,
-      position: myPlayer.position,
-      rotation: myPlayer.rotation,
+      position: playersPeer[socketName].children[0].position,
+      rotation: playersPeer[socketName].children[0].rotation,
       animation: "Idle",
       roomName: roomName,
     });
@@ -1238,7 +1260,7 @@ const animate = () => {
 
   /*-----------------joystick-------------------*/
 
-  if (myPlayer && isMobile && isJoystickTouched && playersPeer[socketName]) {
+  if (isMobile && isJoystickTouched && playersPeer[socketName]) {
     booster_button.style.display = "block";
 
     if (
@@ -1255,18 +1277,41 @@ const animate = () => {
       //       item.material.opacity = 0.4;
       //     });
       //   isSitting = false;
+      //   camera.position.set(
+      //     playersPeer[socketName].children[0].position.x,
+      //     playersPeer[socketName].children[0].position.y + 1.5,
+      //     playersPeer[socketName].children[0].position.z + 7
+      //   );
       // }
-      enableForward && myPlayer.translateZ(-walkspeed * deltaTime);
-
       [enableForward, enableBackward] = WalkCollision(
         enableForward,
         enableBackward,
         "forward"
       );
       if (isSpeed) {
+        direction
+          .set(0, 0, -1)
+          .applyQuaternion(playersPeer[socketName].children[0].quaternion);
+        enableForward &&
+          playersPeer[socketName].children[0].position.addScaledVector(
+            direction,
+            walkspeedFast * deltaTime
+          );
+        enableForward &&
+          camera.position.addScaledVector(direction, walkspeedFast * deltaTime);
         updatePlayerLocally("Running");
         updatePlayerGloally("Running");
       } else {
+        direction
+          .set(0, 0, -1)
+          .applyQuaternion(playersPeer[socketName].children[0].quaternion);
+        enableForward &&
+          playersPeer[socketName].children[0].position.addScaledVector(
+            direction,
+            walkspeedSlow * deltaTime
+          );
+        enableForward &&
+          camera.position.addScaledVector(direction, walkspeedSlow * deltaTime);
         updatePlayerLocally("Walking");
         updatePlayerGloally("Walking");
       }
@@ -1293,8 +1338,23 @@ const animate = () => {
       //       item.material.opacity = 0.4;
       //     });
       //   isSitting = false;
+      //   camera.position.set(
+      //     playersPeer[socketName].children[0].position.x,
+      //     playersPeer[socketName].children[0].position.y + 1.5,
+      //     playersPeer[socketName].children[0].position.z + 7
+      //   );
       // }
-      enableBackward && myPlayer.translateZ(walkspeed * deltaTime);
+      direction
+        .set(0, 0, 1)
+        .applyQuaternion(playersPeer[socketName].children[0].quaternion);
+      enableBackward &&
+        playersPeer[socketName].children[0].position.addScaledVector(
+          direction,
+          walkspeed * deltaTime
+        );
+      enableBackward &&
+        camera.position.addScaledVector(direction, walkspeed * deltaTime);
+
       [enableForward, enableBackward] = WalkCollision(
         enableForward,
         enableBackward,
@@ -1309,7 +1369,7 @@ const animate = () => {
       joystickY < joystickAmount
     ) {
       // left
-      myPlayer.rotateY(+walkRotateSpeed * deltaTime);
+      playersPeer[socketName].children[0].rotateY(+walkRotateSpeed * deltaTime);
       updatePlayerLocally("Walking");
       updatePlayerGloally("Walking");
     } else if (
@@ -1318,7 +1378,7 @@ const animate = () => {
       joystickY < joystickAmount
     ) {
       // right
-      myPlayer.rotateY(-walkRotateSpeed * deltaTime);
+      playersPeer[socketName].children[0].rotateY(-walkRotateSpeed * deltaTime);
       updatePlayerLocally("Walking");
       updatePlayerGloally("Walking");
     }
@@ -1327,7 +1387,7 @@ const animate = () => {
   }
 
   /*-----------------keyboard-------------------*/
-  if (myPlayer) {
+  if (playersPeer[socketName]) {
     if (keyboard.pressed("shift")) {
       walkspeed = walkspeedFast;
       avtarAnimation = "Running";
@@ -1343,8 +1403,22 @@ const animate = () => {
             item.material.opacity = 0.4;
           });
         isSitting = false;
+        camera.position.set(
+          playersPeer[socketName].children[0].position.x,
+          playersPeer[socketName].children[0].position.y + 1.5,
+          playersPeer[socketName].children[0].position.z + 7
+        );
       }
-      enableForward && myPlayer.translateZ(-walkspeed * deltaTime);
+      direction
+        .set(0, 0, -1)
+        .applyQuaternion(playersPeer[socketName].children[0].quaternion);
+      enableForward &&
+        playersPeer[socketName].children[0].position.addScaledVector(
+          direction,
+          walkspeed * deltaTime
+        );
+      enableForward &&
+        camera.position.addScaledVector(direction, walkspeed * deltaTime);
       [enableForward, enableBackward] = WalkCollision(
         enableForward,
         enableBackward,
@@ -1361,8 +1435,22 @@ const animate = () => {
             item.material.opacity = 0.4;
           });
         isSitting = false;
+        camera.position.set(
+          playersPeer[socketName].children[0].position.x,
+          playersPeer[socketName].children[0].position.y + 1.5,
+          playersPeer[socketName].children[0].position.z + 7
+        );
       }
-      enableBackward && myPlayer.translateZ(walkspeed * deltaTime);
+      direction
+        .set(0, 0, 1)
+        .applyQuaternion(playersPeer[socketName].children[0].quaternion);
+      enableBackward &&
+        playersPeer[socketName].children[0].position.addScaledVector(
+          direction,
+          walkspeed * deltaTime
+        );
+      enableBackward &&
+        camera.position.addScaledVector(direction, walkspeed * deltaTime);
       [enableForward, enableBackward] = WalkCollision(
         enableForward,
         enableBackward,
@@ -1372,26 +1460,26 @@ const animate = () => {
       updatePlayerGloally(avtarAnimation);
     }
     if (keyboard.pressed("left") || keyboard.pressed("a")) {
-      myPlayer.rotateY(+walkRotateSpeed * deltaTime);
+      playersPeer[socketName].children[0].rotateY(+walkRotateSpeed * deltaTime);
 
       updatePlayerLocally(avtarAnimation);
       updatePlayerGloally(avtarAnimation);
     }
     if (keyboard.pressed("right") || keyboard.pressed("d")) {
-      myPlayer.rotateY(-walkRotateSpeed * deltaTime);
+      playersPeer[socketName].children[0].rotateY(-walkRotateSpeed * deltaTime);
 
       updatePlayerLocally(avtarAnimation);
       updatePlayerGloally(avtarAnimation);
     }
   }
   /*-----------------city-------------------*/
-  // sittingLoaderMeshArray.length &&
-  //   sittingLoaderMeshArray.map((item) => {
-  //     item.position.y += 0.005 * Math.sin(Date.now() / 100);
-  //   });
-  if (water) {
-    water.material.uniforms["time"].value += (1.0 / 60.0) * 0.2;
-  }
+  sittingLoaderMeshArray.length &&
+    sittingLoaderMeshArray.map((item) => {
+      item.position.y += 0.005 * Math.sin(Date.now() / 100);
+    });
+  // if (water) {
+  //   water.material.uniforms['time'].value += 1.0 / 60.0;
+  // }
   if (modelMixer) {
     modelMixer.update(deltaTime);
   }
@@ -1402,8 +1490,9 @@ const animate = () => {
     });
   }
   /*------------------------------------*/
-  camera2 && renderer.render(scene, camera2);
-  camera2 && labelRenderer.render(scene, camera2);
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+  controls.update();
   requestAnimationFrame(animate);
   stats.update();
 };
@@ -1448,6 +1537,6 @@ export {
   playersPeer,
   characterYWalkingPosition,
   avtarName,
+  camera,
   smallMap,
-  infoMeshArray,
 };

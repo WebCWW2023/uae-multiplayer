@@ -6,7 +6,7 @@ const createHeart = (emojiName,heartsGroup,playerPosition) => {
     const heartSprite = new THREE.Sprite(heartSpriteMaterial);
     heartSprite.scale.set(0.1, 0.1, 1);
     const heartInstance = heartSprite.clone();
-    heartInstance.position.set(playerPosition.x, playerPosition.y + 0.8, playerPosition.z);
+    heartInstance.position.set(playerPosition.x, playerPosition.y + 1.1, playerPosition.z);
     heartsGroup.add(heartInstance);
     gsap.to(heartInstance.position, {
         duration: 1,

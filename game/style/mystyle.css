@@ -1,3 +1,68 @@
+/* 
+playerCount 1
+screenSharingButton 1
+screenSharingPopup 3
+screensharingsection 5
+*/
+/*-----------------playerCount-------------------*/
+.playerCount {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  background-color: black;
+  color: white;
+  font-size: 25px;
+  padding: 5px 12px;
+  border-radius: 50px;
+  opacity: 0.5;
+}
+
+.screenSharingButton {
+  position: fixed;
+  top: 10px;
+  right: 60px;
+  z-index: 1;
+  background-color: black;
+  color: white;
+  font-size: 25px;
+  padding: 5px 12px;
+  border-radius: 50px;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.screenSharingPopup {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 10000000;
+  color: bleck;
+  font-size: 25px;
+  padding: 5px 12px;
+  border-radius: 10px; 
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  width: 300px;
+}
+
+
+
+.screenSharingButton1 {
+  position: fixed;
+  top: 10px;
+  right: 120px;
+  z-index: 1;
+  background-color: black;
+  color: white;
+  font-size: 25px;
+  padding: 5px 12px;
+  border-radius: 50px;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
 /*-----------------smallmap-------------------*/
 .smallMap {
   position: fixed;
@@ -5,7 +70,7 @@
   left: 10px;
   width: 200px;
   height: 200px;
-  background-image: url('../../static/map/map2.jpg');
+  background-image: url("../../static/map/map2.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   z-index: 5;
@@ -13,13 +78,13 @@
 }
 
 .smallAvtar {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   background-color: blue;
   border-radius: 50%;
   position: absolute;
-  top: 75px;
-  left: 75px;
+  top: 92.5px;
+  left: 92.5px;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -27,3 +92,4 @@
     display: none;
   }
 }
+
