@@ -126,7 +126,7 @@ screenButton 4
     opacity: 0;
     position: absolute;
     left: 50%;
-    transform: translate(-50%, 10px);
+    transform: translate(-50%, 40px);
     transition: all 200ms ease;
     pointer-events: none;
   }
@@ -249,5 +249,10 @@ screenButton 4
     width: 40px;
     height: 40px;
     font-size: 20px;
+  }
+  [data-tooltip] {
+    &:after {
+      display: none;
+    }
   }
 }

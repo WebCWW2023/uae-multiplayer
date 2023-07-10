@@ -1,8 +1,9 @@
 /* 
 avtarLabel 1
-popup_class 4
 joystick 3
 booster_button 3 
+popup_class 4
+popup_content_class 5
 screenButtonToggle 4
 screenButtonLeft 4
 smallMap 5
@@ -10,6 +11,11 @@ shorcutKeyScreen 6
 newPlayerJoin 7
 loadingScreenContainer 8
 */
+:root {
+  --popup-content-class-bg1: #bc4e9c;
+  --popup-content-class-bg2: #f80759;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -113,49 +119,26 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 4;
-}
-
-/* Add Animation */
-@-webkit-keyframes animatetop {
-  from {
-    right: -300px;
-    opacity: 0;
-  }
-
-  to {
-    right: 0;
-    opacity: 1;
-  }
-}
-
-@keyframes animatetop {
-  from {
-    right: -300px;
-    opacity: 0;
-  }
-
-  to {
-    right: 0;
-    opacity: 1;
-  }
+  background-color: rgb(0, 0, 0, 0.5);
 }
 
 /* Modal Content */
 .popup_content_class {
-  margin: auto;
   position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -51%);
   text-align: center;
   padding: 15px;
   border: 1px solid #888;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  -webkit-animation-name: animatetop;
-  -webkit-animation-duration: 0.4s;
-  animation-name: animatetop;
-  animation-duration: 0.4s;
-  background-color: #f6f1f1a3;
-  height: 400px;
   width: 540px;
+  background-image: repeating-linear-gradient(
+    to right bottom,
+    var(--popup-content-class-bg1),
+    var(--popup-content-class-bg2)
+  );
 }
 
 /* product information */
@@ -165,7 +148,6 @@ body {
   height: 65%;
   left: 20px;
   top: 20%;
-  background: #dcdcdcb5;
   padding: 35px 20px 35px 20px;
 }
 
@@ -336,8 +318,8 @@ body {
     height: 40%;
   }
   .popup_content_class {
-    width: 420px;
-    height: 300px;
+    width: 370px;
+    height: 290px;
   }
   .bannerImage {
     width: 80%;

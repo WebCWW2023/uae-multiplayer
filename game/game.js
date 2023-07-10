@@ -265,7 +265,7 @@ const htmlEvents = () => {
         return new Promise((resolve) => setTimeout(resolve, ms));
       }
       async function createHeartLoop() {
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 15; i++) {
           createHeart(emojiname, heartsGroup, myPlayer.position);
           await delay(100); // Wait for one second
         }
@@ -357,7 +357,7 @@ const htmlEvents = () => {
               return new Promise((resolve) => setTimeout(resolve, ms));
             };
             async function createHeartLoop() {
-              for (let i = 0; i < 25; i++) {
+              for (let i = 0; i < 15; i++) {
                 createHeart(emojiname, heartsGroup, myPlayer.position);
                 await delay(100);
               }
@@ -557,7 +557,7 @@ const init = () => {
         myPlayer = playersPeer[socketName].children[0];
         UpdateMaterial(objectArray);
         addBanner();
-        startVoice();
+         startVoice();
         socket.emit("getAllPlayerData", { roomName: roomName });
         isFirstTimeLoaded = false;
       }
